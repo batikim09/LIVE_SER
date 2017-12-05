@@ -1,0 +1,19 @@
+#Basice packages to install by apt-get
+#sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev
+
+#Requirements
+pyyaml 
+h5py 
+numpy>=1.12.0
+scipy  
+sympy 
+nose
+scikit-learn
+
+tensorflow==0.12.1
+
+keras==1.2.1
+librosa
+pyaudio
+webrtcvad
+six>=1.10
