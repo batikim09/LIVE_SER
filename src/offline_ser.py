@@ -28,25 +28,28 @@ def vad_result(task_outputs, predict_mode, logger = None):
     logs = ""
     for output in task_outputs:
         if predict_mode != 2:
-            output_str = str(output)
+            output_str = "\t" + str(output)
         else:
             output_str = ""
             for p in output:
-                output_str = output_str + str(p) + "\t"
-        logs += output_str + "\t"
+                output_str = output_str + "\t" + str(p) 
+        logs += output_str
+    
+    logs = logs[1:]
     log(logs, logger)
 
 def no_vad_result(tasks, predict_mode, logger = None):
     logs = ""
-    for task in tasks:
+    for num_classes in tasks:
         if predict_mode != 2:
-            output_str = '-1.'
+            output_str = '\t-1.'
         else:
             output_str = ""
-            for p in output:
-                output_str = output_str + "-1.\t"
+            for p in range(num_classes):
+                output_str = output_str + "\t-1."
+        logs += output_str
     
-        logs += output_str + "\t"
+    logs = logs[1:]
     log(logs, logger)
 
 def predict_frame(dec, frames, args, g_min_max = None, save = False):
@@ -94,7 +97,11 @@ def ser(args):
     else:
         logger = open(args.wave + ".vad.csv", "w")
             
-    tasks = args.tasks.split(",")
+    tasks = []
+    
+    for task in args.tasks.split(","):
+        tasks.append(int(task.split(":")[1]))
+        
     #audio device setup
     format = pyaudio.paInt16
     
