@@ -22,8 +22,22 @@ def listup_devices():
     p = pyaudio.PyAudio()
     #list up devices
     for i in range(p.get_device_count()):
-        print p.get_device_info_by_index(i)
- 
+        log(str(p.get_device_info_by_index(i)))
+
+def find_device_id(name):
+    p = pyaudio.PyAudio()
+    info = p.get_host_api_info_by_index(0)
+    numdevices = info.get('deviceCount')
+    for i in range(0, numdevices):
+        if (p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) > 0:
+            infor = "Input Device id " + str(i) + " - " +  str(p.get_device_info_by_host_api_device_index(0, i).get('name')) + " - ch: " + str(p.get_device_info_by_host_api_device_index(0, i).get('maxInputChannels')) + " sr: " + str(p.get_device_info_by_host_api_device_index(0, i).get('defaultSampleRate'))
+            
+        if name in p.get_device_info_by_host_api_device_index(0, i).get('name'):
+            log(str( name + " is found and will be used as an input device."))
+            return i
+    log( "There is no such a device named " + name)
+    return -1
+
 def vad_result(task_outputs, predict_mode, logger = None):
     logs = ""
     for output in task_outputs:
@@ -152,8 +166,16 @@ def ser(args):
                     rate = f.getframerate(),
                     output = True)
     else:
-        log("no input wav file!")
-        exit()
+        log("no input wav file! Starting a live mode.")
+        #open mic
+        if args.device_id is None:
+            args.device_id = find_device_id("pulse")
+        if args.device_id == -1:
+            log("There is no default device!, please check the configuration")
+            sys.exit(-1)
+            
+        #open mic
+        f = p.open(format = format, channels = n_channel,rate = sample_rate,input = True, input_device_index = args.device_id,frames_per_buffer = chunk)
 
     log("---Starting---")
 
@@ -167,8 +189,12 @@ def ser(args):
 
     #read first frame
     while True:
-        data = f.readframes(chunk)
         
+        if args.wave:
+            data = f.readframes(chunk)
+        else:
+            data = f.read(chunk)
+            
         if data == '':
             break
 
@@ -187,7 +213,8 @@ def ser(args):
 
         if mx < args.min_energy:
             is_speech = 0
-
+        
+        
         #log(str('gain: %d, vad: %d' % (mx, is_speech)))   
         
         if is_speech == 1:
@@ -241,7 +268,9 @@ def ser(args):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-
+    
+    parser.add_argument("-d_id", "--device_id", dest= 'device_id', type=int, help="device id for microphone", default=None)
+    
     #options for VAD
     parser.add_argument("-sr", "--sample_rate", dest= 'sample_rate', type=int, help="number of samples per sec, only accept [8000|16000|32000]", default=16000)
     parser.add_argument("-fd", "--frame_duration", dest= 'frame_duration', type=int, help="a duration of a frame msec, only accept [10|20|30]", default=20)
