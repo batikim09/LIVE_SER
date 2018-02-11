@@ -227,7 +227,7 @@ def ser(args):
         
         frames_np.append(np.fromstring(data, dtype=np.int16))
         
-        total_frame_len = total_frame_len + frame_len
+        total_frame_len = total_frame_len + chunk
 
         if args.model_file and total_frame_len > min_voice_frame_len:       
             
