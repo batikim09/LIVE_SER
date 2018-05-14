@@ -19,8 +19,9 @@ python ~/Workspace/Workspace_surf/Exp/feature_ext/scripts/extract_feat_temporal_
 #file mode
 #python ./src/offline_ser.py -p_mode 2 -f_mode 0 -wav ./wav/IEMOCAP_EXCITED.16k.wav -log ./output/IEMOCAP_EXCITED.16k.wav.dist.mfcc.file.csv -md ./model/MSPEC_MM.all.ar_vl.0.h5 -c_len 10 -m_t_step 500 -tasks arousal:2,valence:2 -g_min -0.284261 -g_max 0.317006 --save
 
-#live mode
-#python ./src/offline_ser.py -p_mode 2 -f_mode 0 -wav ./wav/IEMOCAP_EXCITED.16k.wav -log ./output/IEMOCAP_EXCITED.16k.wav.dist.mfcc.live.csv -md ./model/MSPEC_MM.all.ar_vl.0.h5 -c_len 10 -m_t_step 500 -tasks arousal:2,valence:2 -g_min -0.284261 -g_max 0.317006
+#live demo mode
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+
 
 #classification mode
 python ./src/offline_ser.py -p_mode 1 -f_mode 0 -wav ./wav/IEMOCAP_EXCITED.16k.wav -log ./output/IEMOCAP_EXCITED.16k.wav.class.mfcc.file.csv -md ./model/MSPEC_MM.all.ar_vl.0.h5 -c_len 10 -m_t_step 500 -tasks arousal:2,valence:2 -g_min -0.284261 -g_max 0.317006 --save
@@ -50,6 +51,12 @@ python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/NEWS.16k.wav -log ./o
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/NEWS.16k.wav -log ./output/NEWS.16k.wav.dist.raw.file.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
 
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/FOX_NEWS.16k.wav -log ./output/FOX_NEWS.16k.wav.dist.raw.file.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
+
+#MORE NEWS
+python ~/Workspace/Workspace_surf/Exp/feature_ext/scripts/extract_feat_temporal_LLD_rosa.py -f ~/Workspace/Workspace_old_tf_keras/LIVE_SER/wav/ -m ~/Workspace/Workspace_old_tf_keras/LIVE_SER/wav/meta.CNNNEWS.txt --gain_stat
+
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/2017-10-02_2300_US_CNN_Erin_Burnett_OutFront.16k.wav -log ./output/2017-10-02_2300_US_CNN_Erin_Burnett_OutFront.16k.wav.class.raw.live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' -g_min -0.648979 -g_max 0.54826
+
 
 #SQL: AIBO corpus only used for training
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s1_v1.16k.wav -log ./output/s1_v1.wav.dist.raw.file.csv -md ./model/AIBO.si.cw.raw.2d.res.lstm.gpool.dnn.4.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
@@ -82,3 +89,9 @@ python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s9_v3.16k.wav -lo
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s10_v1.16k.wav -log ./output/s10_v1.wav.dist.raw.file.csv -md ./model/AIBO.si.cw.raw.2d.res.lstm.gpool.dnn.4.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s10_v2.16k.wav -log ./output/s10_v2.wav.dist.raw.file.csv -md ./model/AIBO.si.cw.raw.2d.res.lstm.gpool.dnn.4.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s10_v3.16k.wav -log ./output/s10_v3.wav.dist.raw.file.csv -md ./model/AIBO.si.cw.raw.2d.res.lstm.gpool.dnn.4.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --save
+#models trained above support only old keras (1.xxx)
+
+#live demo with a new keras trained model (2.xxx)
+pacmd list-sources | grep -e device.string -e 'name:'
+pacmd set-default-source alsa_input.usb-_Webcam_C170-02.analog-mono
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md /home/jkim/Workspace/Workspace_old_tf_keras/LIVE_SER/model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
