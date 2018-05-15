@@ -1,8 +1,7 @@
 # LIVE_SER
 Live demo for speech emotion recognition using Keras and Tensorflow models
 
-<a id="top"/> 
-# squirrel_ser
+<a id="top"/>
 
 This folder has source codes for deep temporal architecture-based speech emotion recognition. Note that this module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive without GPU supports. Hence, it may not be operationable on the robot, rather deployment on an external machine is recommended. Performance varies on speakers and environment.
 
@@ -17,7 +16,7 @@ Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**)
 
 4. <a href="#4--usage">Usage</a>
 
-4. <a href="#5--references">References</a>
+5. <a href="#5--references">References</a>
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
 ####Debian packages
@@ -82,7 +81,111 @@ by the argument: -d_id
 
 For a quick start, run in the terminal:
 
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+
+
 To get information of parameters, 
 
+python ./src/offline_ser.py 
+
+usage: offline_ser.py [-h] [-d_id DEVICE_ID] [-sr SAMPLE_RATE]
+                      [-fd FRAME_DURATION] [-vm VAD_MODE] [-vd VAD_DURATION]
+                      [-me MIN_ENERGY] [-wav WAVE] [-g_min G_MIN]
+                      [-g_max G_MAX] [-s_ratio SPEECH_RATIO] [-fp FEAT_PATH]
+                      [-md MODEL_FILE] [-elm_md ELM_MODEL_FILE]
+                      [-c_len CONTEXT_LEN] [-m_t_step MAX_TIME_STEPS]
+                      [-log LOG_FILE] [-tasks TASKS] [-p_mode PREDICT_MODE]
+                      [-f_mode FEAT_MODE] [-f_dim FEAT_DIM] [--stl] [--save]
+                      [--play]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  
+  -d_id DEVICE_ID, --device_id DEVICE_ID
+                        device id for microphone
+  
+  -sr SAMPLE_RATE, --sample_rate SAMPLE_RATE
+                        number of samples per sec, only accept
+                        [8000|16000|32000]
+  
+  -fd FRAME_DURATION, --frame_duration FRAME_DURATION
+                        a duration of a frame msec, only accept [10|20|30]
+  
+  -vm VAD_MODE, --vad_mode VAD_MODE
+                        vad mode, only accept [0|1|2|3], 0 more quiet 3 more
+                        noisy
+  
+  -vd VAD_DURATION, --vad_duration VAD_DURATION
+                        minimum length(ms) of speech for emotion detection
+  
+  -me MIN_ENERGY, --min_energy MIN_ENERGY
+                        minimum energy of speech for emotion detection
+  
+  -wav WAVE, --wave WAVE
+                        wave file (offline mode)
+  
+  -g_min G_MIN, --gain_min G_MIN
+                        min value of automatic gain normalisation
+  
+  -g_max G_MAX, --gain_max G_MAX
+                        max value of automatic gain normalisation
+  
+  -s_ratio SPEECH_RATIO, --speech_ratio SPEECH_RATIO
+                        speech ratio
+  
+  -fp FEAT_PATH, --feat_path FEAT_PATH
+                        temporay feat path
+  
+  -md MODEL_FILE, --model_file MODEL_FILE
+                        keras model path
+  
+  -elm_md ELM_MODEL_FILE, --elm_model_file ELM_MODEL_FILE
+                        elm model_file
+  
+  -c_len CONTEXT_LEN, --context_len CONTEXT_LEN
+                        context window's length
+  
+  -m_t_step MAX_TIME_STEPS, --max_time_steps MAX_TIME_STEPS
+                        maximum time steps for DNN
+  
+  -log LOG_FILE, --log_file LOG_FILE
+                        log
+  
+  -tasks TASKS, --tasks TASKS
+                        tasks (arousal:2,valence:2)
+  
+  -p_mode PREDICT_MODE, --predict PREDICT_MODE
+                        0 = diff, 1 = classification, 2 = distribution
+  
+  -f_mode FEAT_MODE, --feat_mode FEAT_MODE
+                        0 = lspec, 1 = raw wav
+  
+  -f_dim FEAT_DIM, --feat_dim FEAT_DIM
+                        feature dimension (# spec for lspec or mspec
+  
+  --stl                 only for single task learning model
+  
+  --save                save voice files
+  
+  --play                real time play
+
+
+## 5. References <a id="5--references"/>
+
+
+Please cite one of these papers in your publications if it helps your research:
+
+@inproceedings{kim2017interspeech,
+  title={Towards Speech Emotion Recognition ``in the wild'' using Aggregated Corpora and Deep Multi-Task Learning},
+  author={\textbf{Kim, Jaebok} and Englebienne, Gwenn and Truong, Khiet P and Evers, Vanessa},
+  booktitle={Proceedings of the INTERSPEECH},
+  pages={1113--1117},
+  year={2017}
+}
+
+
+@inproceedings{kim2017acmmm, title={Deep Temporal Models using Identity Skip-Connections for Speech Emotion Recognition}, author={Kim, Jaebok and Englebienne, Gwenn and Truong, Khiet P and Evers, Vanessa}, booktitle={Proceedings of ACM Multimedia}, pages={1006-1013}, year={2017} }
+
+@inproceedings{kim2017acii, title={Learning spectro-temporal features with 3D CNNs for speech emotion recognition}, author={Kim, Jaebok and Truong, Khiet and Englebienne, Gwenn and Evers, Vanessa}, booktitle={Proceedings of International Conference on Affective Computing and Intelligent Interaction}, pages={}, year={2017} }
 
 <a id="top"/> 
