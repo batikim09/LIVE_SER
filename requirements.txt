@@ -9,9 +9,9 @@ sympy
 nose
 scikit-learn
 
-tensorflow==1.4.0
-keras==2.1.5
+#tensorflow==1.4.0
+#keras==2.1.5
 librosa
 pyaudio
 webrtcvad
-#six>=1.10
+six>=1.10
