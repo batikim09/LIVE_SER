@@ -19,11 +19,16 @@ Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**)
 5. <a href="#5--references">References</a>
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
-####Debian packages
 
-Please run the following steps BEFORE you run catkin_make.
+This software is compatible with only python 2.x, not 3.x.
 
-`sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev'
+### basic system packages
+Please run the following steps:
+
+`sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev' for Ubuntu
+
+For mac osx, you should install portaudio using brew: 
+https://stackoverflow.com/questions/33851379/pyaudio-installation-on-mac-python-3?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
 Next, using pip, install all pre-required modules.
 (pip version >= 8.1 is required.)
@@ -33,15 +38,20 @@ http://askubuntu.com/questions/712339/how-to-upgrade-pip-to-latest
 If you have old numpy (<1.12) please remove it.
 https://github.com/tensorflow/tensorflow/issues/559
 
+Next, install a right version of tensorflow depending on your os (see https://www.tensorflow.org/install/)
+
+For example, you can install a cpu version for mac os:
+
+pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py2-none-any.whl (for python2.x)
+ 
 Then,
-sudo pip install -r requirements.txt
+
+sudo pip install -r requirements.txt (for python2.x)
 
 If you have numpy already, it must be higher than 1.12.0
-try to install tensorflow using pip, then it will install the proper version of numpy.
 
 ## 2. Build <a id="2--build"/>
-
-Please use catkin_make to build this.
+Any building processing is not required at the moment.
 
 ## 3. Device setup <a id="3--device"/>
 Currently, using pulse audio as the input device is the best stable way. If you do not specify device ID, a pulse audio device will be chosen as an input. However, you must make sure if pulseaudio server is running. (if not, type "pulseaudio --start").
