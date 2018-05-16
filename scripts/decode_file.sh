@@ -92,6 +92,18 @@ python ./src/offline_ser.py -p_mode 2 -f_mode 1 -wav ./wav/SQL/s10_v3.16k.wav -l
 #models trained above support only old keras (1.xxx)
 
 #live demo with a new keras trained model (2.xxx)
+
+#For linux os, you need to set a default device for pulseaudio
 pacmd list-sources | grep -e device.string -e 'name:'
-pacmd set-default-source alsa_input.usb-_Webcam_C170-02.analog-mono
-python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md /home/jkim/Workspace/Workspace_old_tf_keras/LIVE_SER/model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+#For example, you find "name: <Channel_1__Channel_2.4>" as your input source.
+pacmd "set-default-source Channel_1__Channel_2.4"
+#Then, the following script will use the default pulse device
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+
+#For mac os, you need to set a device for "offline_ser.py"
+#Running the script without arguments, it will show you a list of devices.
+python ./src/offline_ser.py
+#if you find your device in index 2
+python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --wav './wav/IEMOCAP_EXCITED.16k.wav'

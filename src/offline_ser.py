@@ -4,7 +4,6 @@ import wave
 import audioop
 import webrtcvad
 import argparse
-import thread
 import sys
 import os
 import numpy as np
@@ -14,7 +13,6 @@ import sys
 import struct
 from datetime import datetime
 
-from threading import Thread
 from helper import *
 
 
@@ -83,6 +81,7 @@ def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudi
     wf.setnchannels(1)
     wf.setsampwidth(pyaudio.get_sample_size(format))
     wf.setframerate(rate)
+    #this code works for only ...
     wf.writeframes(b''.join(frames))
     wf.close()
 
@@ -119,12 +118,16 @@ def ser(args):
     #audio device setup
     format = pyaudio.paInt16
     
-    n_channel = 1
+    n_channel = args.n_channel
     sample_rate = args.sample_rate
     frame_duration = args.frame_duration
-    frame_len = (sample_rate * frame_duration / 1000)
-    chunk = frame_len / 2
+    frame_len = int(sample_rate * (frame_duration / 1000.0))
+    chunk = int(frame_len/ args.n_channel)
+
     vad_mode = args.vad_mode
+    
+    log("frame_len: %d" % frame_len)
+    log("chunk size: %d" % chunk)
 
     #feature extraction setting
     min_voice_frame_len = frame_len * (args.vad_duration / frame_duration)
@@ -214,24 +217,25 @@ def ser(args):
         if mx < args.min_energy:
             is_speech = 0
         
-        
-        #log(str('gain: %d, vad: %d' % (mx, is_speech)))   
+        if args.gain:
+            log(str('gain: %d, vad: %d' % (mx, is_speech)))   
         
         if is_speech == 1:
             speech_frame_len = speech_frame_len + chunk #note chunk is a half of frame length.
 
-        if frames_16i == '': 
-            frames_16i = data
-        else:
-            frames_16i = frames_16i + data
+        if args.save:
+            if frames_16i == '': 
+                frames_16i = data
+            else:
+                frames_16i = frames_16i + data
         
         frames_np.append(np.fromstring(data, dtype=np.int16))
         
         total_frame_len = total_frame_len + chunk
 
-        if args.model_file and total_frame_len > min_voice_frame_len:       
-            
-            if float(speech_frame_len)/total_frame_len > args.speech_ratio:
+        if total_frame_len > min_voice_frame_len:       
+             
+            if args.model_file and float(speech_frame_len)/total_frame_len > args.speech_ratio:
                 
                 if args.save:
                     outputs = predict_file(dec, p, tmp_data_path + "/" + str(datetime.now()) + '.wav', frames_16i, args, g_min_max = g_min_max, save = save)
@@ -273,6 +277,7 @@ if __name__ == '__main__':
     
     #options for VAD
     parser.add_argument("-sr", "--sample_rate", dest= 'sample_rate', type=int, help="number of samples per sec, only accept [8000|16000|32000]", default=16000)
+    parser.add_argument("-ch", "--n_channel", dest= 'n_channel', type=int, help="number of channels", default=1)
     parser.add_argument("-fd", "--frame_duration", dest= 'frame_duration', type=int, help="a duration of a frame msec, only accept [10|20|30]", default=20)
     parser.add_argument("-vm", "--vad_mode", dest= 'vad_mode', type=int, help="vad mode, only accept [0|1|2|3], 0 more quiet 3 more noisy", default=0)
     parser.add_argument("-vd", "--vad_duration", dest= 'vad_duration', type=int, help="minimum length(ms) of speech for emotion detection", default=1000)
@@ -298,8 +303,9 @@ if __name__ == '__main__':
     parser.add_argument("-f_mode","--feat_mode", dest = 'feat_mode', type=int, help=("0 = lspec, 1 = raw wav"), default = 0)
     parser.add_argument("-f_dim","--feat_dim", dest = 'feat_dim', type=int, help=("feature dimension (# spec for lspec or mspec"), default = 80)
     parser.add_argument("--stl", help="only for single task learning model", action="store_true")
-    parser.add_argument("--save", help="save voice files", action="store_true")
-    parser.add_argument("--play", help="real time play", action="store_true")
+    parser.add_argument("--save", help="save detected voice segments", action="store_true")
+    parser.add_argument("--play", help="play a given audio file in real-time", action="store_true")
+    parser.add_argument("--gain", help="show gains of the selected microphone", action="store_true")
 
     args = parser.parse_args()
 

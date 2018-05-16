@@ -22,20 +22,25 @@ Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**)
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
 
-This software is compatible with only python 2.x, not 3.x.
+This software is compatible with only python 2.x and 3.x, but the following descrptions assume 3.x.
 
 ### basic system packages
 Please run the following steps:
 
 `sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev' for Ubuntu
 
-For mac osx, you should install portaudio using brew: 
+For mac osx, you should install portaudio and pulseaudio using brew.
+
+brew install portaudio
+
+brew install pulseaudio
+
+If you have any issues with portaudio, see:
 https://stackoverflow.com/questions/33851379/pyaudio-installation-on-mac-python-3?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 
-Next, using pip, install all pre-required modules.
-(pip version >= 8.1 is required.)
-
-http://askubuntu.com/questions/712339/how-to-upgrade-pip-to-latest
+### python packages
+Using pip, install all pre-required modules.
+(pip version >= 8.1 is required, see: http://askubuntu.com/questions/712339/how-to-upgrade-pip-to-latest)
 
 If you have old numpy (<1.12) please remove it.
 https://github.com/tensorflow/tensorflow/issues/559
@@ -44,11 +49,11 @@ Next, install a right version of tensorflow depending on your os (see https://ww
 
 For example, you can install a cpu version for mac os:
 
-pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py2-none-any.whl (for python2.x)
+pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl 
  
 Then,
 
-sudo pip install -r requirements.txt (for python2.x)
+sudo pip3 install -r requirements.txt
 
 If you have numpy already, it must be higher than 1.12.0
 
@@ -60,12 +65,11 @@ Currently, using pulse audio as the input device is the best stable way. If you 
 
 If you want and know pulse & alsa works, you can choose your own input device as a pulse audio and use the pulse as the input device for emotion recognition as follows:
 
-0. turn on pulseaudio server if it's off
+0. run pulseaudio as a daemon process if it's off
 
-pulseaudio --start
+pulseaudio --D
 
-1. find your device by:
-See: https://wiki.archlinux.org/index.php/PulseAudio/Examples
+1. find your device (see: https://wiki.archlinux.org/index.php/PulseAudio/Examples) by 
 
 pacmd list-sources | grep -e device.string -e 'name:'
 
