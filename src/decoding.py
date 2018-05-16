@@ -60,19 +60,19 @@ class Decoder(object):
         self.model.summary()
 
     #predict frames
-    def predict(self, frames, g_min_max = None, feat_mode = 0, feat_dim = 80):
+    def predict(self, frames, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
         feat = extract_feat_frame(frames, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, sr = self.sr, min_max = g_min_max)
-        temporal_feat = self.build_temporal_2d_feat(feat)
+        temporal_feat = self.build_temporal_feat(feat, three_d)
         return self.temporal_predict(temporal_feat)
 
     #predict frames in a file
-    def predict_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80):
+    def predict_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
         feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
-        temporal_feat = self.build_temporal_2d_feat(feat)
+        temporal_feat = self.build_temporal_feat(feat, three_d)
         return self.temporal_predict(temporal_feat)
     
     #predict frames in a long file
-    def predict_long_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80):
+    def predict_long_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
         feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
 
         n_turns = feat.shape[0] / self.max_time_steps
@@ -81,7 +81,7 @@ class Decoder(object):
         for i in range(0, n_turns):
             start = i * self.max_time_steps
             end = (i + 1) * self.max_time_steps
-            temporal_feat = self.build_temporal_2d_feat(feat[start:end])
+            temporal_feat = self.build_temporal_feat(feat[start:end], three_d)
             result.append(self.temporal_predict(temporal_feat))
         return result
 
@@ -109,31 +109,44 @@ class Decoder(object):
         return preds
 
     #compose a temporal feature structure
-    def build_temporal_2d_feat(self, input_feat):
+    def build_temporal_feat(self, input_feat, three_d = False):
         print("feature shape:", input_feat.shape)
 
         input_dim = input_feat.shape[1]
         max_t_steps = int(self.max_time_steps / self.context_len)
-        feat = np.zeros((1, max_t_steps, 1, self.context_len, input_dim))
+
+        if three_d:
+            feat = np.zeros((1, 1, max_t_steps, self.context_len, input_dim))
+        else:    
+            feat = np.zeros((1, max_t_steps, 1, self.context_len, input_dim))
+
         for t_steps in range(max_t_steps):
             if t_steps * self.context_len < input_feat.shape[0] - self.context_len:
                 if input_feat.shape[1] != input_dim:
                     print('inconsistent dim')
                     break
                 for c in range(self.context_len):
-                    feat[0, t_steps, 0, c, ] = input_feat[t_steps * self.context_len + c]
+                    if three_d:
+                        feat[0, 0, t_steps, c, ] = input_feat[t_steps * self.context_len + c]
+                    else:
+                        feat[0, t_steps, 0, c, ] = input_feat[t_steps * self.context_len + c]    
+                        
         return feat
 
     #classification mode
     def returnLabel(self, result):
         labels = []
         
+        if self.stl:
+            result = [result]
+
         #multi-tasks output format
         for task in result:
-            #print("task result shape: ", task.shape)
+            '''
+            Deprecated, seq2seq predictions are not supported anymore.
             if len(task.shape) > 2: #for sequential predictions, an outer layer is not meaningful.
                 task = task[0]
-                
+            ''' 
             label = np.argmax(task, 1)
             #print("label:", str(label))
             most_frequent = np.bincount(label).argmax()
@@ -149,6 +162,9 @@ class Decoder(object):
         labels = []
         #multi-tasks output format
         
+        if self.stl:
+            result = [result]
+
         for task in result:
             print("task result shape: ", task.shape)
             values = task.T
@@ -167,6 +183,9 @@ class Decoder(object):
         labels = []
         #multi-tasks output format
         
+        if self.stl:
+            result = [result]
+
         for task in result:
             values = task.T
             label = values[-1] - values[0]
@@ -223,7 +242,7 @@ def write_named_seq_result(file_name, named_seq_task_outputs):
                 output.write( str(item) + '\t')
         output.write( '\n' )    
     output.close()
-    
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-wav", "--wave", dest= 'wave', type=str, help="wave file", default='./test.wav')

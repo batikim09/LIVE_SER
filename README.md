@@ -120,6 +120,7 @@ To get the probablistic distribution, we set -p_mode as "2".
 
 The model predicts two tasks: arousal and valence. Each task has 3 classes (low, neutral, and high). So we specify -tasks as "arousal:3,valence:3".
 
+Note that gain normalisation is crucial to the performance. Details can be found in ./scripts/decode_file.sh
 
 ## 5. References <a id="5--references"/>
 

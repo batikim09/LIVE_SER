@@ -70,7 +70,7 @@ def no_vad_result(tasks, predict_mode, logger = None):
 #predict frame by frame
 def predict_frame(dec, frames, args, g_min_max = None, save = False):
     
-    results = dec.predict(frames, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim)
+    results = dec.predict(frames, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
     
     if args.predict_mode == 0:
         task_outputs = dec.returnDiff(results)
@@ -91,7 +91,7 @@ def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudi
     wf.writeframes(frames)
     wf.close()
 
-    results = dec.predict_file(path, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim)
+    results = dec.predict_file(path, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
     
     if save == False:
         os.remove(path)
@@ -302,12 +302,15 @@ if __name__ == '__main__':
     #parser.add_argument("-n_class", "--n_class", dest= 'n_class', type=int, help="number of class", default=2)
     parser.add_argument("-tasks", "--tasks", dest = "tasks", type=str, help ="multi-tasks (e.g. arousal:2,valence:2)", default='emotion_category')
     parser.add_argument("-p_mode","--predict", dest = 'predict_mode', type=int, help=("0 = diff, 1 = classification, 2 = distribution"), default = 2)
-    parser.add_argument("-f_mode","--feat_mode", dest = 'feat_mode', type=int, help=("0 = lspec, 1 = raw wav"), default = 0)
+    parser.add_argument("-f_mode","--feat_mode", dest = 'feat_mode', type=int, help=("0 = mspec, 1 = raw wav, 2 = lspec"), default = 0)
     parser.add_argument("-f_dim","--feat_dim", dest = 'feat_dim', type=int, help=("feature dimension (# spec for lspec or mspec"), default = 80)
     parser.add_argument("--stl", help="only for single task learning model", action="store_true")
     parser.add_argument("--save", help="save detected voice segments", action="store_true")
     parser.add_argument("--play", help="play a given audio file in real-time", action="store_true")
     parser.add_argument("--gain", help="show gains of the selected microphone", action="store_true")
+
+    #parser.add_argument("--auto_gain", help="automatic_gain_control", action="store_true")
+    parser.add_argument("--three_d", help="3DCNN", action="store_true")
 
     args = parser.parse_args()
 

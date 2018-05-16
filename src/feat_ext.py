@@ -2,6 +2,32 @@ import numpy as np
 import librosa
 from sklearn.decomposition import PCA
 from librosa.util import buf_to_float
+import sys
+
+#global variables for min-max
+max = -1.0
+min = sys.float_info.max
+
+def gain_norm(frames, min_max):
+    if min_max:
+        min = min_max[0]
+        max = min_max[1]
+        frames = (frames - min)/(max - min)
+    else: #auto gain control
+        temp_min = np.min(frames)
+        temp_max = np.max(frames)
+        global min
+        global max
+        if temp_min < min:
+            min = temp_min
+            #debug
+            print("new min", min)
+        if temp_max > max:
+            max = temp_max
+            #debug
+            print("new max", max)
+        frames = (frames - min)/(max - min)
+    return frames
 
 def extract_feat_frame(frames, mode = 0, file = None, sr = 16000, n_fft=512, hop_length=512, n_mels=40, fmax= 8000, min_max = None, convert_16I_to_32F = True):
     
@@ -13,15 +39,14 @@ def extract_feat_frame(frames, mode = 0, file = None, sr = 16000, n_fft=512, hop
         n_frames = np.concatenate(n_frames)
         frames = np.ascontiguousarray(n_frames, np.float32)
         
-    if min_max:
-        min = min_max[0]
-        max = min_max[1]
-        frames = (frames - min)/(max - min)
+    frames = gain_norm(frames, min_max)
         
     if mode == 0:
         return extract_melspec_frame(frames, file = file, n_mels = n_mels, sr = sr)
     elif mode == 1:
         return extract_wav_frame(frames, file = file)
+    elif mode == 2:
+        return extract_log_spectrogram_frame(frames, file = file, n_mels = n_mels, sr = sr)
     else:
         print("non-supported feature type")
 
@@ -31,6 +56,8 @@ def extract_feat_file(path, mode = 0, file = None, n_fft=512, hop_length=512, n_
         return extract_melspec_file(path, file = file, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels, fmax= fmax, min_max = min_max)
     elif mode == 1: 
         return extract_wav_file(path, file = file, min_max = min_max)
+    elif mode == 2:
+        return extract_log_spectrogram_file(path, file = file, n_fft=n_fft, hop_length=hop_length, n_mels=n_mels, fmax= fmax, min_max = min_max)
     else:
         print("non-supported feature type")
 
@@ -85,10 +112,7 @@ def extract_pca_logspec_frame(frames, file = None, sr = 16000, n_fft=512, hop_le
 def extract_melspec_file(path, file = None, n_fft=512, hop_length=512, n_mels=40, fmax= 8000, min_max = None):
 
     y, sr = librosa.load(path)
-    if min_max:
-        min = min_max[0]
-        max = min_max[1]
-        y = (y - min)/(max - min)
+    y = gain_norm(y, min_max)
 
     mel = extract_melspec_frame(y, file = file, sr = sr, n_fft = n_fft, hop_length = hop_length, n_mels = n_mels, fmax = fmax)
     return mel
@@ -96,10 +120,7 @@ def extract_melspec_file(path, file = None, n_fft=512, hop_length=512, n_mels=40
 def extract_log_spectrogram_file(path, file = None, n_fft=512, hop_length=512, n_mels=40, fmax= 8000, min_max = None):
 
     y, sr = librosa.load(path)
-    if min_max:
-        min = min_max[0]
-        max = min_max[1]
-        y = (y - min)/(max - min)
+    y = gain_norm(y, min_max)
 
     spec = extract_log_spectrogram_frame(y, file = file, sr = sr, n_fft = n_fft, hop_length = hop_length )
     return spec
@@ -107,10 +128,7 @@ def extract_log_spectrogram_file(path, file = None, n_fft=512, hop_length=512, n
 def extract_pca_logspec_file(path, file = None, n_fft=512, hop_length=512, fmax= 8000, pca_components = 60, min_max = None):
 
     y, sr = librosa.load(path)
-    if min_max:
-        min = min_max[0]
-        max = min_max[1]
-        y = (y - min)/(max - min)
+    y = gain_norm(y, min_max)
 
     spec = extract_pca_logspec_frame(y, file = file, sr = sr, n_fft = n_fft, hop_length = hop_length, pca_components =pca_components)
     return spec
@@ -118,10 +136,7 @@ def extract_pca_logspec_file(path, file = None, n_fft=512, hop_length=512, fmax=
 def extract_wav_file(path, file = None, min_max = None):
 
     y, sr = librosa.load(path)
-    if min_max:
-        min = min_max[0]
-        max = min_max[1]
-        y = (y - min)/(max - min)
+    y = gain_norm(y, min_max)
 
     r = np.zeros((len(y), 1))
     r[:, 0] = y[:]
@@ -129,3 +144,4 @@ def extract_wav_file(path, file = None, min_max = None):
     if file != None:
         np.savetxt(file, r, fmt='%.8e', delimiter=';', newline='\n', header='', footer='')
     return r
+
