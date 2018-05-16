@@ -86,15 +86,15 @@ def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudi
     wf.setnchannels(1)
     wf.setsampwidth(pyaudio.get_sample_size(format))
     wf.setframerate(rate)
-    #this code works for only ...
-    wf.writeframes(b''.join(frames))
+    #this code works for only for pulseaudio
+    #wf.writeframes(b''.join(frames))
+    wf.writeframes(frames)
     wf.close()
 
     results = dec.predict_file(path, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim)
     
     if save == False:
         os.remove(path)
-
     if args.predict_mode == 0:
         task_outputs = dec.returnDiff(results)
     elif args.predict_mode == 1:
