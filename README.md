@@ -3,7 +3,9 @@ Live demo for speech emotion recognition using Keras and Tensorflow models
 
 <a id="top"/>
 
-This folder has source codes for deep temporal architecture-based speech emotion recognition. Note that this module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive without GPU supports. Hence, it may not be operationable on the robot, rather deployment on an external machine is recommended. Performance varies on speakers and environment.
+This folder has source codes for speech emotion recognition. This module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive. Hence, it may not be operationable on mobile devices. Performance depends on contextual factors such as speaker, language, environment, etc. 
+
+The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (LDC prosody, eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may fit this model. However, you can use your own trained model.
 
 Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**) - **j.kim@utwente.nl**
 
