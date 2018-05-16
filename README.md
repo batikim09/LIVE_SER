@@ -110,70 +110,15 @@ There are many parameters that controls VAD, feature extraction, and prediction.
 
 python ./src/offline_ser.py 
 
-usage: offline_ser.py [-h] [-d_id DEVICE_ID] [-sr SAMPLE_RATE] [-ch N_CHANNEL]
-                      [-fd FRAME_DURATION] [-vm VAD_MODE] [-vd VAD_DURATION]
-                      [-me MIN_ENERGY] [-wav WAVE] [-g_min G_MIN]
-                      [-g_max G_MAX] [-s_ratio SPEECH_RATIO] [-fp FEAT_PATH]
-                      [-md MODEL_FILE] [-elm_md ELM_MODEL_FILE]
-                      [-c_len CONTEXT_LEN] [-m_t_step MAX_TIME_STEPS]
-                      [-log LOG_FILE] [-tasks TASKS] [-p_mode PREDICT_MODE]
-                      [-f_mode FEAT_MODE] [-f_dim FEAT_DIM] [--stl] [--save]
-                      [--play] [--gain]
+For quick use (assuming your device id is 2):
 
-optional arguments:
-  -h, --help            show this help message and exit
-  -d_id DEVICE_ID, --device_id DEVICE_ID
-                        a device id for microphone
-  -sr SAMPLE_RATE, --sample_rate SAMPLE_RATE
-                        the number of samples per sec, only accept
-                        [8000|16000|32000]
-  -ch N_CHANNEL, --n_channel N_CHANNEL
-                        the number of channels
-  -fd FRAME_DURATION, --frame_duration FRAME_DURATION
-                        a duration of a frame msec, only accept [10|20|30]
-  -vm VAD_MODE, --vad_mode VAD_MODE
-                        vad mode, only accept [0|1|2|3], 0 more quiet 3 more
-                        noisy
-  -vd VAD_DURATION, --vad_duration VAD_DURATION
-                        the minimum length(ms) of speech for emotion detection
-  -me MIN_ENERGY, --min_energy MIN_ENERGY
-                        the minimum energy of speech for emotion detection
-  -wav WAVE, --wave WAVE
-                        wave file to load (offline mode)
-  -g_min G_MIN, --gain_min G_MIN
-                        the min value of automatic gain normalisation
-  -g_max G_MAX, --gain_max G_MAX
-                        the max value of automatic gain normalisation
-  -s_ratio SPEECH_RATIO, --speech_ratio SPEECH_RATIO
-                        the minimum ratio of speech segments to the total
-                        segments
-  -fp FEAT_PATH, --feat_path FEAT_PATH
-                        temporay feat path
-  -md MODEL_FILE, --model_file MODEL_FILE
-                        keras model path
-  -elm_md ELM_MODEL_FILE, --elm_model_file ELM_MODEL_FILE
-                        elm model_file
-  -c_len CONTEXT_LEN, --context_len CONTEXT_LEN
-                        context window's length
-  -m_t_step MAX_TIME_STEPS, --max_time_steps MAX_TIME_STEPS
-                        maximum time steps per sec; it depends on the feature
-                        type. e.g. 16000 for raw audio; 100 for Log-
-                        spectrogram (LSPEC)
-  -log LOG_FILE, --log_file LOG_FILE
-                        log file to store all messages
-  -tasks TASKS, --tasks TASKS
-                        multi-tasks (e.g. arousal:2,valence:2)
-  -p_mode PREDICT_MODE, --predict PREDICT_MODE
-                        0 = diff, 1 = classification, 2 = distribution
-  -f_mode FEAT_MODE, --feat_mode FEAT_MODE
-                        0 = lspec, 1 = raw wav
-  -f_dim FEAT_DIM, --feat_dim FEAT_DIM
-                        feature dimension (# spec for lspec or mspec
-  --stl                 only for single task learning model
-  --save                save detected voice segments
-  --play                play a given audio file in real-time
-  --gain                show gains of the selected microphone
+python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 
+The provided model (./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5) is trained by using end-to-end method, which means its input feature is raw-wave. So you have to specify -f_mode as "1". Also, the raw wave form has 16000 samples per sec. So we set -m_t_step as "16000". The model uses 10 contextual windows; so each window has 1600 samples (-c_len 1600).
+
+To get the probablistic distribution, we set -p_mode as "2".
+
+The model predicts two tasks: arousal and valence. Each task has 3 classes (low, neutral, and high). So we specify -tasks as "arousal:3,valence:3".
 
 
 ## 5. References <a id="5--references"/>
