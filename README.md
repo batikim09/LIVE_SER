@@ -1,13 +1,15 @@
 # LIVE_SER
 Live demo for speech emotion recognition using Keras and Tensorflow models
 
+Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**) - **j.kim@utwente.nl**
+
 <a id="top"/>
 
 This folder has source codes for speech emotion recognition. This module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive. Hence, it may not be operationable on mobile devices. Performance depends on contextual factors such as speaker, language, environment, etc. 
 
-The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (LDC prosody, eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may fit this model. However, you can use your own trained model.
+The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (LDC prosody, eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may best fit this model. However, you can use your own trained model for the best performance.
 
-Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**) - **j.kim@utwente.nl**
+The prediction is very sensitive to gains of the microphone. Hence, it is important to set minimum and maximum gains for the normalisation of gains. Please find details of arguments below.
 
 ##Contents
 1. <a href="#1--installation-requirements">Installation Requirements</a>
@@ -21,15 +23,17 @@ Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**)
 5. <a href="#5--references">References</a>
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
-
-This software is compatible with only python 2.x and 3.x, but the following descrptions assume 3.x.
+This software only runs on OSX or Linux (tested on Ubuntu). It is compatible with python 2.x and 3.x, but the following descrptions assume that python 3.x is installed.
 
 ### basic system packages
-Please run the following steps:
 
-`sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev' for Ubuntu
+This software relies on several system packages that must be installed using a software manager.
 
-For mac osx, you should install portaudio and pulseaudio using brew.
+For Ubuntu, please run the following steps:
+
+`sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev'
+
+For mac osx, you should install portaudio and pulseaudio using brew as follows:
 
 brew install portaudio
 
@@ -55,13 +59,13 @@ Then,
 
 sudo pip3 install -r requirements.txt
 
-If you have numpy already, it must be higher than 1.12.0
-
 ## 2. Build <a id="2--build"/>
-Any building processing is not required at the moment.
+Any building process is not required at the moment.
 
 ## 3. Device setup <a id="3--device"/>
-Currently, using pulse audio as the input device is the best stable way. If you do not specify device ID, a pulse audio device will be chosen as an input. However, you must make sure if pulseaudio server is running. (if not, type "pulseaudio --start").
+
+### Runnning on Linux
+Currently, using pulseaudio as the input device is the most stable way. If you do not specify device ID, a pulse audio device will be chosen as a default input. However, you must make sure if pulseaudio server is running. (if not, type "pulseaudio --start").
 
 If you want and know pulse & alsa works, you can choose your own input device as a pulse audio and use the pulse as the input device for emotion recognition as follows:
 
@@ -69,42 +73,44 @@ If you want and know pulse & alsa works, you can choose your own input device as
 
 pulseaudio --D
 
-1. find your device (see: https://wiki.archlinux.org/index.php/PulseAudio/Examples) by 
+1. find your device (see: https://wiki.archlinux.org/index.php/PulseAudio/Examples) by typing in your terminal.
 
 pacmd list-sources | grep -e device.string -e 'name:'
 
 Depending on os and devices, it gives you various names. You need to choose a right input device among them.
 
-2. set a default device for "pulse" by typing in a terminal for example:
+For example, you find "name: <Channel_1__Channel_2.4>" as your input source.
+Then, set a default device for "pulse" by typing:
 
-pacmd "set-default-source alsa_input.usb-Andrea_Electronics_Corp._Andrea_Stereo_USB_Mic-00-Mic.analog-stereo"
+pacmd "set-default-source Channel_1__Channel_2.4"
 
-3. check it works:
+2. run 
 
-pacmd stat
-
-4. check your "pulse" device's ID in pulseaudio:
-
-rosrun squirrel_ser ser.py
-
-This will give you a list of audio devices and you need to identify index of "pulse".
-Note that this index changes depending on usb devices being used. Hence, it's safe to check before it runs.
-
-5. set the ID of "pulse" in the launch file: ser.launch
-by the argument: -d_id 
-
-## 4. Usage <a id="4--usage"/>
-
-For a quick start, run in the terminal:
+The following script will use the default pulse device
 
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 
+### Runnning on OSX
 
-To get information of parameters, 
+Type:
+
+python3 ./src/offline_ser.py
+
+This will give you a list of audio devices and you need to identify index of your device.
+Note that this index changes depending on usb devices being used. Hence, it's safe to check before it runs.
+
+if you find your device in index 2 (for the argument of d_id), run:
+
+python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+
+
+## 4. Usage <a id="4--usage"/>
+
+There are many parameters that controls VAD, feature extraction, and prediction. To get information of parameters, type:
 
 python ./src/offline_ser.py 
 
-usage: offline_ser.py [-h] [-d_id DEVICE_ID] [-sr SAMPLE_RATE]
+usage: offline_ser.py [-h] [-d_id DEVICE_ID] [-sr SAMPLE_RATE] [-ch N_CHANNEL]
                       [-fd FRAME_DURATION] [-vm VAD_MODE] [-vd VAD_DURATION]
                       [-me MIN_ENERGY] [-wav WAVE] [-g_min G_MIN]
                       [-g_max G_MAX] [-s_ratio SPEECH_RATIO] [-fp FEAT_PATH]
@@ -112,84 +118,67 @@ usage: offline_ser.py [-h] [-d_id DEVICE_ID] [-sr SAMPLE_RATE]
                       [-c_len CONTEXT_LEN] [-m_t_step MAX_TIME_STEPS]
                       [-log LOG_FILE] [-tasks TASKS] [-p_mode PREDICT_MODE]
                       [-f_mode FEAT_MODE] [-f_dim FEAT_DIM] [--stl] [--save]
-                      [--play]
+                      [--play] [--gain]
 
 optional arguments:
   -h, --help            show this help message and exit
-  
   -d_id DEVICE_ID, --device_id DEVICE_ID
-                        device id for microphone
-  
+                        a device id for microphone
   -sr SAMPLE_RATE, --sample_rate SAMPLE_RATE
-                        number of samples per sec, only accept
+                        the number of samples per sec, only accept
                         [8000|16000|32000]
-  
+  -ch N_CHANNEL, --n_channel N_CHANNEL
+                        the number of channels
   -fd FRAME_DURATION, --frame_duration FRAME_DURATION
                         a duration of a frame msec, only accept [10|20|30]
-  
   -vm VAD_MODE, --vad_mode VAD_MODE
                         vad mode, only accept [0|1|2|3], 0 more quiet 3 more
                         noisy
-  
   -vd VAD_DURATION, --vad_duration VAD_DURATION
-                        minimum length(ms) of speech for emotion detection
-  
+                        the minimum length(ms) of speech for emotion detection
   -me MIN_ENERGY, --min_energy MIN_ENERGY
-                        minimum energy of speech for emotion detection
-  
+                        the minimum energy of speech for emotion detection
   -wav WAVE, --wave WAVE
-                        wave file (offline mode)
-  
+                        wave file to load (offline mode)
   -g_min G_MIN, --gain_min G_MIN
-                        min value of automatic gain normalisation
-  
+                        the min value of automatic gain normalisation
   -g_max G_MAX, --gain_max G_MAX
-                        max value of automatic gain normalisation
-  
+                        the max value of automatic gain normalisation
   -s_ratio SPEECH_RATIO, --speech_ratio SPEECH_RATIO
-                        speech ratio
-  
+                        the minimum ratio of speech segments to the total
+                        segments
   -fp FEAT_PATH, --feat_path FEAT_PATH
                         temporay feat path
-  
   -md MODEL_FILE, --model_file MODEL_FILE
                         keras model path
-  
   -elm_md ELM_MODEL_FILE, --elm_model_file ELM_MODEL_FILE
                         elm model_file
-  
   -c_len CONTEXT_LEN, --context_len CONTEXT_LEN
                         context window's length
-  
   -m_t_step MAX_TIME_STEPS, --max_time_steps MAX_TIME_STEPS
-                        maximum time steps for DNN
-  
+                        maximum time steps per sec; it depends on the feature
+                        type. e.g. 16000 for raw audio; 100 for Log-
+                        spectrogram (LSPEC)
   -log LOG_FILE, --log_file LOG_FILE
-                        log
-  
+                        log file to store all messages
   -tasks TASKS, --tasks TASKS
-                        tasks (arousal:2,valence:2)
-  
+                        multi-tasks (e.g. arousal:2,valence:2)
   -p_mode PREDICT_MODE, --predict PREDICT_MODE
                         0 = diff, 1 = classification, 2 = distribution
-  
   -f_mode FEAT_MODE, --feat_mode FEAT_MODE
                         0 = lspec, 1 = raw wav
-  
   -f_dim FEAT_DIM, --feat_dim FEAT_DIM
                         feature dimension (# spec for lspec or mspec
-  
   --stl                 only for single task learning model
-  
-  --save                save voice files
-  
-  --play                real time play
+  --save                save detected voice segments
+  --play                play a given audio file in real-time
+  --gain                show gains of the selected microphone
+
 
 
 ## 5. References <a id="5--references"/>
 
-
-Please cite one of these papers in your publications if it helps your research:
+This software is based on the following papers. Please cite one of these papers in your publications if it helps your research:
 
 @inproceedings{kim2017interspeech,
   title={Towards Speech Emotion Recognition ``in the wild'' using Aggregated Corpora and Deep Multi-Task Learning},

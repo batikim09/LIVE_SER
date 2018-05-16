@@ -26,6 +26,7 @@ class Decoder(object):
         self.tasks_names = []
         self.total_high_level_feat = 0
 
+        #setting multi-task
         for task in tasks.split(","):
             print("task: ", task)
             task_n_class = task.split(':') 
@@ -33,6 +34,7 @@ class Decoder(object):
             self.tasks_names.append(task_n_class[0])
             self.total_high_level_feat = self.total_high_level_feat + int(task_n_class[1])            
         
+        #seeting an elm model for a post-classifier
         if self.elm_model_files != None:
             print("elm model is loaded")
             elm_tasks = elm_model_files.split(',')
@@ -57,33 +59,36 @@ class Decoder(object):
         self.max_time_steps = max_time_steps   
         self.model.summary()
 
+    #predict frames
     def predict(self, frames, g_min_max = None, feat_mode = 0, feat_dim = 80):
         feat = extract_feat_frame(frames, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, sr = self.sr, min_max = g_min_max)
         temporal_feat = self.build_temporal_2d_feat(feat)
         return self.temporal_predict(temporal_feat)
 
-    
+    #predict frames in a file
     def predict_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80):
         feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
         temporal_feat = self.build_temporal_2d_feat(feat)
         return self.temporal_predict(temporal_feat)
     
+    #predict frames in a long file
     def predict_long_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80):
         feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
 
         n_turns = feat.shape[0] / self.max_time_steps
         result = []
+        #devide the total frames by several turns; each turn has the maximum number of time steps.
         for i in range(0, n_turns):
             start = i * self.max_time_steps
             end = (i + 1) * self.max_time_steps
             temporal_feat = self.build_temporal_2d_feat(feat[start:end])
             result.append(self.temporal_predict(temporal_feat))
-            #print("%d:\t%s\n" %(i, str(result)))
         return result
 
+    #prediction using temporal features
     def temporal_predict(self, temporal_feat):  
         print("temporal feat shape: ", temporal_feat.shape)
-        print(temporal_feat[0,0,0,0,0])
+        #print(temporal_feat[0,0,0,0,0])
         predictions = self.model.predict(temporal_feat)
 
         if self.elm_model_files == None:
@@ -103,6 +108,7 @@ class Decoder(object):
         
         return preds
 
+    #compose a temporal feature structure
     def build_temporal_2d_feat(self, input_feat):
         print("feature shape:", input_feat.shape)
 
@@ -118,6 +124,7 @@ class Decoder(object):
                     feat[0, t_steps, 0, c, ] = input_feat[t_steps * self.context_len + c]
         return feat
 
+    #classification mode
     def returnLabel(self, result):
         labels = []
         
@@ -136,6 +143,7 @@ class Decoder(object):
         #but results are always multi-tasks format
         return labels
     
+    #distribution mode
     def returnClassDist(self, result):
         
         labels = []
@@ -153,7 +161,8 @@ class Decoder(object):
         
         #but results are always multi-tasks format
         return labels
-            
+    
+    #return the difference between probabilities of the first and last class.        
     def returnDiff(self, result):
         labels = []
         #multi-tasks output format
@@ -214,6 +223,7 @@ def write_named_seq_result(file_name, named_seq_task_outputs):
                 output.write( str(item) + '\t')
         output.write( '\n' )    
     output.close()
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-wav", "--wave", dest= 'wave', type=str, help="wave file", default='./test.wav')
