@@ -196,7 +196,7 @@ def ser(args):
         if args.wave:
             data = f.readframes(chunk)
         else:
-            data = f.read(chunk)
+            data = f.read(chunk,exception_on_overflow=False)
             
         if data == '':
             break
