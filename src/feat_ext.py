@@ -88,7 +88,7 @@ def extract_log_spectrogram_frame(frames, file = None, sr = 16000, n_fft=512, ho
 
     #spec = librosa.feature.logfsgram(y=frames, sr=sr, S=None, n_fft=n_fft, hop_length=hop_length)
     spec = np.abs(librosa.stft(frames, n_fft = n_fft))
-    log_spec = librosa.logamplitude(spec**2)
+    log_spec = librosa.amplitude_to_db(spec**2)
     log_spec = log_spec.T
 
     if file != None:

@@ -15,7 +15,6 @@ from datetime import datetime
 
 from helper import *
 
-
 #list up available input devices
 def listup_devices():
     p = pyaudio.PyAudio()
@@ -176,7 +175,7 @@ def ser(args):
             sys.exit(-1)
             
         #open mic
-        f = p.open(format = format, channels = args.n_channel, rate = sample_rate,input = True, input_device_index = args.device_id,frames_per_buffer = chunk)
+        f = p.open(format = format, channels = args.n_channel, rate = sample_rate, input = True, input_device_index = args.device_id,frames_per_buffer = chunk)
 
     log("---Starting---")
 

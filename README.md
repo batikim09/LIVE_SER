@@ -7,7 +7,7 @@ Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**)
 
 This folder has source codes for speech emotion recognition. This module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive. Hence, it may not be operationable on mobile devices. Performance depends on contextual factors such as speaker, language, environment, etc. 
 
-The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (LDC prosody, eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may best fit this model. However, you can use your own trained model for the best performance.
+The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may best fit this model. However, you can use your own trained model for the best performance.
 
 The prediction is very sensitive to gains of the microphone. Hence, it is important to set minimum and maximum gains for the normalisation of gains. Please find details of arguments below.
 
