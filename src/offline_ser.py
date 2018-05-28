@@ -67,9 +67,9 @@ def no_vad_result(tasks, predict_mode, logger = None):
     log(logs, logger)
 
 #predict frame by frame
-def predict_frame(dec, frames, args, g_min_max = None, save = False):
+def predict_frame(dec, frames, args, save = False):
     
-    results = dec.predict(frames, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
+    results = dec.predict(frames, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
     
     if args.predict_mode == 0:
         task_outputs = dec.returnDiff(results)
@@ -80,7 +80,7 @@ def predict_frame(dec, frames, args, g_min_max = None, save = False):
     return task_outputs
 
 #predict frames in a wave file
-def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudio.paInt16, g_min_max = None, save = False):
+def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudio.paInt16, save = False):
     wf = wave.open(path, 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(pyaudio.get_sample_size(format))
@@ -90,7 +90,7 @@ def predict_file(dec, pyaudio, path, frames, args, rate = 16000, format = pyaudi
     wf.writeframes(frames)
     wf.close()
 
-    results = dec.predict_file(path, g_min_max = g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
+    results = dec.predict_file(path, feat_mode = args.feat_mode, feat_dim = args.feat_dim, three_d = args.three_d)
     
     if save == False:
         os.remove(path)
@@ -150,9 +150,9 @@ def ser(args):
     #initialise recognition model
     if args.model_file:
         if args.stl:
-           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, sr = args.sample_rate)
+           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, sr = args.sample_rate, min_max = g_min_max)
         else:
-           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, stl = False, sr = args.sample_rate)
+           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, stl = False, sr = args.sample_rate, min_max = g_min_max)
             
     p = pyaudio.PyAudio()
 
@@ -239,10 +239,10 @@ def ser(args):
                 
                 #predict
                 if args.save:
-                    outputs = predict_file(dec, p, tmp_data_path + "/" + str(datetime.now()) + '.wav', frames_16i, args, g_min_max = g_min_max, save = args.save)
+                    outputs = predict_file(dec, p, tmp_data_path + "/" + str(datetime.now()) + '.wav', frames_16i, args, save = args.save)
                 else:
                     frames_np = np.hstack(frames_np)
-                    outputs = predict_frame(dec, frames_np, args, g_min_max = g_min_max)
+                    outputs = predict_frame(dec, frames_np, args)
                     
                 vad_result(outputs, args.predict_mode, logger)
             else:

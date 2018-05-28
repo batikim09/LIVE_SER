@@ -14,7 +14,7 @@ from high_level import *
 
 
 class Decoder(object):
-    def __init__(self, model_file = './model.h5', elm_model_files = None, feat_path = './temp.csv', context_len = 5, max_time_steps = 300, elm_hidden_num = 50, stl = True, elm_main_task_id = -1, sr = 16000, tasks = 'arousal:2,valence:2'):
+    def __init__(self, model_file = './model.h5', elm_model_files = None, feat_path = './temp.csv', context_len = 5, max_time_steps = 300, elm_hidden_num = 50, stl = True, elm_main_task_id = -1, sr = 16000, tasks = 'arousal:2,valence:2', min_max = None):
         
         self.stl = stl
         self.model = self.model = keras.models.load_model(model_file)
@@ -25,6 +25,8 @@ class Decoder(object):
         self.tasks = []
         self.tasks_names = []
         self.total_high_level_feat = 0
+
+        self.feat_ext = FeatExt(min_max)
 
         #setting multi-task
         for task in tasks.split(","):
@@ -60,20 +62,20 @@ class Decoder(object):
         self.model.summary()
 
     #predict frames
-    def predict(self, frames, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
-        feat = extract_feat_frame(frames, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, sr = self.sr, min_max = g_min_max)
+    def predict(self, frames, feat_mode = 0, feat_dim = 80, three_d = False):
+        feat = self.feat_ext.extract_feat_frame(frames, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, sr = self.sr)
         temporal_feat = self.build_temporal_feat(feat, three_d)
         return self.temporal_predict(temporal_feat)
 
     #predict frames in a file
-    def predict_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
-        feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
+    def predict_file(self, input_file, feat_mode = 0, feat_dim = 80, three_d = False):
+        feat = self.feat_ext.extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim)
         temporal_feat = self.build_temporal_feat(feat, three_d)
         return self.temporal_predict(temporal_feat)
     
     #predict frames in a long file
-    def predict_long_file(self, input_file, g_min_max = None, feat_mode = 0, feat_dim = 80, three_d = False):
-        feat = extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim, min_max = g_min_max)
+    def predict_long_file(self, input_file, feat_mode = 0, feat_dim = 80, three_d = False):
+        feat = self.feat_ext.extract_feat_file(input_file, mode = feat_mode, file = self.feat_path, n_mels = feat_dim)
 
         n_turns = feat.shape[0] / self.max_time_steps
         result = []
@@ -272,9 +274,9 @@ if __name__ == "__main__":
         g_min_max = None
 
     if args.stl:
-        dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_files, feat_path = './temp.csv', context_len = args.context_len, max_time_steps = args.max_time_steps, tasks=args.tasks)
+        dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_files, feat_path = './temp.csv', context_len = args.context_len, max_time_steps = args.max_time_steps, tasks=args.tasks, min_max = g_min_max)
     else:
-        dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_files, feat_path = './temp.csv', context_len = args.context_len, max_time_steps = args.max_time_steps, tasks=args.tasks, stl = False)
+        dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_files, feat_path = './temp.csv', context_len = args.context_len, max_time_steps = args.max_time_steps, tasks=args.tasks, stl = False, min_max = g_min_max)
     
     if args.long_wave:
         result = dec.predict_long_file(args.long_wave, g_min_max, feat_mode = args.feat_mode, feat_dim = args.feat_dim)
