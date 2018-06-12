@@ -14,10 +14,11 @@ from high_level import *
 
 
 class Decoder(object):
-    def __init__(self, model_file = './model.h5', elm_model_files = None, feat_path = './temp.csv', context_len = 5, max_time_steps = 300, elm_hidden_num = 50, stl = True, elm_main_task_id = -1, sr = 16000, tasks = 'arousal:2,valence:2', min_max = None):
+    def __init__(self, model_file = './model.h5', elm_model_files = None, feat_path = './temp.csv', context_len = 5, max_time_steps = 300, elm_hidden_num = 50, stl = True, elm_main_task_id = -1, sr = 16000, tasks = 'arousal:2,valence:2', min_max = None, seq2seq = False):
         
         self.stl = stl
         self.model = self.model = keras.models.load_model(model_file)
+        self.seq2seq = seq2seq
 
         self.elm_model_files = elm_model_files
         self.sess = tf.Session()
@@ -139,21 +140,20 @@ class Decoder(object):
     def returnLabel(self, result):
         labels = []
         
-        if self.stl:
-            result = [result]
+        print(result)
 
         #multi-tasks output format
         for task in result:
-            '''
-            Deprecated, seq2seq predictions are not supported anymore.
-            if len(task.shape) > 2: #for sequential predictions, an outer layer is not meaningful.
-                task = task[0]
-            ''' 
-            label = np.argmax(task, 1)
-            #print("label:", str(label))
-            most_frequent = np.bincount(label).argmax()
-            print("most frequent label:", str(most_frequent))
-            labels.append(most_frequent)
+            
+            if self.seq2seq:
+                label = np.argmax(task, 1)
+                most_frequent = np.bincount(label).argmax()
+                print("most frequent label:", str(most_frequent))
+                labels.append(most_frequent)
+            else:
+                label = np.argmax(task, 0)    
+                print("label:", str(label))
+                labels.append(label)
         
         #but results are always multi-tasks format
         return labels
@@ -163,9 +163,7 @@ class Decoder(object):
         
         labels = []
         #multi-tasks output format
-        
-        if self.stl:
-            result = [result]
+        print(result)
 
         for task in result:
             print("task result shape: ", task.shape)
@@ -184,9 +182,7 @@ class Decoder(object):
     def returnDiff(self, result):
         labels = []
         #multi-tasks output format
-        
-        if self.stl:
-            result = [result]
+        print(result)
 
         for task in result:
             values = task.T

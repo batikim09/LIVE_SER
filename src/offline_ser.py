@@ -150,9 +150,9 @@ def ser(args):
     #initialise recognition model
     if args.model_file:
         if args.stl:
-           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, sr = args.sample_rate, min_max = g_min_max)
+           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, sr = args.sample_rate, min_max = g_min_max, seq2seq = args.seq2seq)
         else:
-           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, stl = False, sr = args.sample_rate, min_max = g_min_max)
+           dec = Decoder(model_file = args.model_file, elm_model_files = args.elm_model_file, context_len = args.context_len, max_time_steps = args.max_time_steps, tasks = args.tasks, stl = False, sr = args.sample_rate, min_max = g_min_max, seq2seq = args.seq2seq)
             
     p = pyaudio.PyAudio()
 
@@ -310,6 +310,7 @@ if __name__ == '__main__':
 
     #parser.add_argument("--auto_gain", help="automatic_gain_control", action="store_true")
     parser.add_argument("--three_d", help="3DCNN", action="store_true")
+    parser.add_argument("--seq2seq", help="seq 2 seq models, output is a time series", action="store_true")
 
     args = parser.parse_args()
 
