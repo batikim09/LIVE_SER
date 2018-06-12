@@ -34,11 +34,14 @@ python ./src/offline_ser.py
 
 #If you find your device in index 2
 #The following script uses automatic gain control
-python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 1 -log ./output/live.wav.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
-python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.1.h5 -c_len 10 -m_t_step 100 -tasks 'arousal:3,valence:3' --three_d
-python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.1.4cls.h5 -c_len 10 -m_t_step 100 -tasks 'nhsa:4' --three_d --stl
+python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 1 -log ./output/live.wav.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --seq2seq
+python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.1.h5 -c_len 10 -m_t_step 100 -tasks 'arousal:3,valence:3' --three_d --seq2seq
+python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.1.4cls.h5 -c_len 10 -m_t_step 100 -tasks 'nhsa:4' --three_d --stl --seq2seq
 
-python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.gar.h5 -c_len 10 -m_t_step 100 -tasks 'gender:2,acted:2,arousal:3' --three_d
+python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.gar.h5 -c_len 10 -m_t_step 100 -tasks 'gender:2,acted:2,arousal:3' --three_d --seq2seq
 
-python ./src/offline_ser.py -p_mode 1 -f_mode 0 --wav './wav/IEMOCAP_EXCITED.16k.wav' -log ./output/iemocap.file.norm.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.gar.h5 -c_len 10 -m_t_step 100 -tasks 'gender:2,acted:2,arousal:3' -g_min -0.284261 -g_max 0.317006 --three_d
+python ./src/offline_ser.py -p_mode 1 -f_mode 0 --wav './wav/IEMOCAP_EXCITED.16k.wav' -log ./output/iemocap.file.norm.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.gar.h5 -c_len 10 -m_t_step 100 -tasks 'gender:2,acted:2,arousal:3' -g_min -0.284261 -g_max 0.317006 --three_d --seq2seq
+
+#Live demo for laughter detection
+python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 0 -log ./output/live.mspec.csv -md ../SER_KERAS_TF_TRAINER/model/ami.laugh.mspec.cnnlstm.0.h5 -c_len 10 -m_t_step 100 -tasks 'laughter:2' --stl --save
 
