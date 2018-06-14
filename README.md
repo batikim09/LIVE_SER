@@ -101,7 +101,7 @@ Note that this index changes depending on usb devices being used. Hence, it's sa
 
 if you find your device in index 2 (for the argument of d_id), run:
 
-python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 
 
 ## 4. Usage <a id="4--usage"/>
@@ -112,9 +112,9 @@ python ./src/offline_ser.py
 
 For quick use (assuming your device id is 2):
 
-python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3' --seq2seq
 
-The provided model (./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5) is trained by using end-to-end method, which means its input feature is raw-wave. So you have to specify -f_mode as "1". Also, the raw wave form has 16000 samples per sec. So we set -m_t_step as "16000". The model uses 10 contextual windows; so each window has 1600 samples (-c_len 1600).
+The provided model (./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5) is trained by using end-to-end method, which means its input feature is raw-wave. So you have to specify -f_mode as "1". Also, the raw wave form has 16000 samples per sec. So we set -m_t_step as "16000". The model uses 10 contextual windows; so each window has 1600 samples (-c_len 1600).
 
 To get the probablistic distribution, we set -p_mode as "2".
 
