@@ -37,7 +37,7 @@ def find_device_id(name):
     return -1
 
 #print out results when voice is detected
-def vad_result(task_outputs, predict_mode, logger = None):
+def vad_result(task_outputs, predict_mode, file_name = None, logger = None):
     logs = ""
     for output in task_outputs:
         if predict_mode != 2:
@@ -48,11 +48,14 @@ def vad_result(task_outputs, predict_mode, logger = None):
                 output_str = output_str + "\t" + str(p) 
         logs += output_str
     
-    logs = logs[1:]
+    if file_name:
+        logs = file_name + logs    
+    else:
+        logs = logs[1:]
     log(logs, logger)
 
 #print out results when voice is not detected
-def no_vad_result(tasks, predict_mode, logger = None):
+def no_vad_result(tasks, predict_mode, file_name = None, logger = None):
     logs = ""
     for num_classes in tasks:
         if predict_mode != 2:
@@ -63,7 +66,11 @@ def no_vad_result(tasks, predict_mode, logger = None):
                 output_str = output_str + "\t-1."
         logs += output_str
     
-    logs = logs[1:]
+    if file_name:
+        logs = file_name + logs    
+    else:
+        logs = logs[1:]
+
     log(logs, logger)
 
 #predict frame by frame
@@ -186,7 +193,7 @@ def ser(args):
     prev_task_outputs = None
     speech_frame_len = 0
     total_frame_count = 0
-
+    file_path = None
     
     while True:
         #read a frame    
@@ -239,14 +246,15 @@ def ser(args):
                 
                 #predict
                 if args.save:
-                    outputs = predict_file(dec, p, tmp_data_path + "/" + str(datetime.now()) + '.wav', frames_16i, args, save = args.save)
+                    file_path = tmp_data_path + "/" + str(datetime.now()) + '.wav'
+                    outputs = predict_file(dec, p, file_path, frames_16i, args, save = args.save)
                 else:
                     frames_np = np.hstack(frames_np)
                     outputs = predict_frame(dec, frames_np, args)
                     
-                vad_result(outputs, args.predict_mode, logger)
+                vad_result(outputs, args.predict_mode, file_path, logger)
             else:
-                no_vad_result(tasks, args.predict_mode, logger)
+                no_vad_result(tasks, args.predict_mode, "", logger)
             
             #initialise variables
             total_frame_len = 0
