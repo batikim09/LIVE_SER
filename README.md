@@ -34,6 +34,8 @@ For Ubuntu, please run the following steps:
 `sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev'
 
 For mac osx, you should install portaudio and pulseaudio using brew as follows:
+(if you do not have brew, then type:
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)")
 
 brew install portaudio
 
@@ -41,6 +43,10 @@ brew install pulseaudio
 
 If you have any issues with portaudio, see:
 https://stackoverflow.com/questions/33851379/pyaudio-installation-on-mac-python-3?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
+
+### virtual environment
+To avoid conflicts of softwares, we recommend you to use virtualenv (see:
+https://virtualenv.pypa.io/en/stable/).
 
 ### python packages
 Using pip, install all pre-required modules.
@@ -54,10 +60,17 @@ Next, install a right version of tensorflow depending on your os (see https://ww
 For example, you can install a cpu version for mac os:
 
 pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl 
- 
-Then,
 
-sudo pip3 install -r requirements.txt
+For python2,
+pip2 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py2-none-any.whl 
+
+If you have older osx ( < 10.12.6), you should install older versions of tensorlfow like:
+
+pip install tensorflow==1.5
+
+Then, to install other required packages,
+
+sudo pip install -r requirements.txt
 
 ## 2. Build <a id="2--build"/>
 Any building process is not required at the moment.
