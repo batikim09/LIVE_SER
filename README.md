@@ -1,11 +1,11 @@
 # LIVE_SER
-Live demo for speech emotion recognition using Keras and Tensorflow models
+Live demo for speech emotion recognition and laughter detection using Keras and Tensorflow models.
 
 Maintainer: [**batikim09**](https://github.com/**github-user**/) (**batikim09**) - **j.kim@utwente.nl**
 
 <a id="top"/>
 
-This folder has source codes for speech emotion recognition. This module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive. Hence, it may not be operationable on mobile devices. Performance depends on contextual factors such as speaker, language, environment, etc. 
+This folder has source codes for speech emotion recognition and laughter detection. This module relies on many machine learning packages and platforms such as Google Tensorflow and Keras, which is comptutationally expensive. Hence, it may not be operationable on mobile devices. Performance depends on contextual factors such as speaker, language, environment, etc. 
 
 The module mainly consists of two parts: voice activity detection and recognition (see details in codes). At this moment, we provide an emotion recognition model that was trained on aggregated English speech corpora (eNTERFACE, SEMAINE, and IEMOCAP), so that English speaker may best fit this model. However, you can use your own trained model for the best performance.
 
@@ -119,6 +119,7 @@ python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -
 
 ## 4. Usage <a id="4--usage"/>
 
+### LIVE MODE
 There are many parameters that controls VAD, feature extraction, and prediction. To get information of parameters, type:
 
 python ./src/offline_ser.py 
@@ -134,6 +135,16 @@ To get the probablistic distribution, we set -p_mode as "2".
 The model predicts two tasks: arousal and valence. Each task has 3 classes (low, neutral, and high). So we specify -tasks as "arousal:3,valence:3".
 
 Note that gain normalisation is crucial to the performance. Details can be found in ./scripts/decode_file.sh
+
+### BATCH MODE
+You can also put a wave file instead of using a live microphone:
+
+python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv -md ../model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl --save -wav './wav/your_wave.wav'
+
+If you run a batch mode, putting a list of wave files, make a txt file that cotains a list of wave files, first. Wave files are separated by newlines.
+
+python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv -md ../model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl --save -batch './wav/list_wave.csv'
+
 
 ## 5. References <a id="5--references"/>
 
