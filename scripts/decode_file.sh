@@ -48,6 +48,9 @@ python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/l
 #Model trained on 500ms-long utterances: high precision, but low recall
 python ./src/offline_ser.py -d_id 1 -vd 500 -p_mode 2 -f_mode 1 -log ./output/live.wav.csv -md ./model/ami.500.raw.cnnlstmfcn.c128.0.h5 -c_len 1600 -m_t_step 8000 -tasks 'laughter:2' --stl --save
 
+#Model trained on 500ms-long utterances, optimized by using f1
+python ./src/offline_ser.py -d_id 1 -vd 500 -p_mode 2 -f_mode 1 -log ./output/live.wav.csv -md ./model/ami.500.raw.cnnlstmfcn.c128.f1.0.h5 -c_len 1600 -m_t_step 8000 -tasks 'laughter:2' --stl --save
+
 #Offline mode for laughter detection
 #Use a single wave file input
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv -md ./model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl --save -wav './wav/your_wave.wav'

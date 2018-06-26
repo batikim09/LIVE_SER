@@ -11,13 +11,20 @@ from feat_ext import *
 from elm import ELM
 from high_level import *
 
+from highway import Highway 
+from conv2d_highway import Conv2DHighway
+from conv1d_highway import Conv1DHighway
+from conv3d_highway import Conv3DHighway
+from custom_cost import *
+from custom_metric import *
+
 
 
 class Decoder(object):
     def __init__(self, model_file = './model.h5', elm_model_files = None, feat_path = './temp.csv', context_len = 5, max_time_steps = 300, elm_hidden_num = 50, stl = True, elm_main_task_id = -1, sr = 16000, tasks = 'arousal:2,valence:2', min_max = None, seq2seq = False):
         
         self.stl = stl
-        self.model = self.model = keras.models.load_model(model_file)
+        self.model = self.model = keras.models.load_model(model_file, custom_objects={'Conv3DHighway': Conv3DHighway, 'Conv2DHighway': Conv2DHighway, 'Conv1DHighway': Conv1DHighway, 'Highway': Highway, 'w_categorical_crossentropy': w_categorical_crossentropy, 'categorical_focal_loss': categorical_focal_loss, 'f1': f1, 'precision': precision, 'recall': recall})
         self.seq2seq = seq2seq
 
         self.elm_model_files = elm_model_files
