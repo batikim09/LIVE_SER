@@ -41,10 +41,11 @@ python ./src/offline_ser.py -d_id 1 -p_mode 1 -f_mode 0 -log ./output/live.mspec
 python ./src/offline_ser.py -p_mode 1 -f_mode 0 --wav './wav/IEMOCAP_EXCITED.16k.wav' -log ./output/iemocap.file.norm.mspec.csv -md ./model/si.ENG.cw.mspec_mm.3d.rc3d.gar.h5 -c_len 10 -m_t_step 100 -tasks 'gender:2,acted:2,arousal:3' -g_min -0.284261 -g_max 0.317006 --three_d --seq2seq
 
 #Live demo for laughter detection
+#Model trained on 1000ms-long utterances: low precision, but high recall
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 0 -log ./output/live.mspec.csv -md ./model/ami.laugh.mspec.cnnlstm.0.h5 -c_len 10 -m_t_step 100 -tasks 'laughter:2' --stl --save
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/live.wav.csv -md ./model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl --save
 
-#Model trained on 500ms-long utterances
+#Model trained on 500ms-long utterances: high precision, but low recall
 python ./src/offline_ser.py -d_id 1 -vd 500 -p_mode 2 -f_mode 1 -log ./output/live.wav.csv -md ./model/ami.500.raw.cnnlstmfcn.c128.0.h5 -c_len 1600 -m_t_step 8000 -tasks 'laughter:2' --stl --save
 
 #Offline mode for laughter detection
