@@ -111,7 +111,7 @@ The following script will use the default pulse device
 
 ```bash
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
-       -md ./model/AIBO.si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5       \
+       -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5            \
        -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 ```
 
@@ -163,7 +163,7 @@ python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/o
        --save -wav './wav/your_wave.wav'
 ```
 
-If you run a batch mode, putting a list of wave files, make a txt file that cotains a list of wave files, first. Wave files are separated by newlines.
+If you run a batch mode, putting a list of wave files, make a txt file that contains a list of wave files, first. Wave files are separated by newlines.
 
 ```bash
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv \
