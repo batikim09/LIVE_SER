@@ -1,4 +1,4 @@
-#Basice packages to install by apt-get
+#Basic packages to install by apt-get
 #sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev
 
 #Requirements
