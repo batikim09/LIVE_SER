@@ -11,15 +11,11 @@ The module mainly consists of two parts: voice activity detection and recognitio
 
 The prediction is very sensitive to gains of the microphone. Hence, it is important to set minimum and maximum gains for the normalisation of gains. Please find details of arguments below.
 
-## Contents
+## Contents  
 1. <a href="#1--installation-requirements">Installation Requirements</a>
-
 2. <a href="#2--build">Build</a>
-
 3. <a href="#3--device">Device setup</a>
-
 4. <a href="#4--usage">Usage</a>
-
 5. <a href="#5--references">References</a>
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
