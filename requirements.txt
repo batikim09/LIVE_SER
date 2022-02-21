@@ -2,6 +2,7 @@
 #sudo apt-get install python-pip python-dev libhdf5-dev portaudio19-dev
 
 #Requirements
+keras==2.1.5
 pyyaml 
 h5py 
 scipy  
@@ -10,8 +11,7 @@ nose
 scikit-learn
 
 #tensorflow==1.4.0
-keras==2.1.5
-librosa
+librosa==0.7.1
 pyaudio
 webrtcvad
 six>=1.10
