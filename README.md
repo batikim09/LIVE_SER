@@ -11,15 +11,11 @@ The module mainly consists of two parts: voice activity detection and recognitio
 
 The prediction is very sensitive to gains of the microphone. Hence, it is important to set minimum and maximum gains for the normalisation of gains. Please find details of arguments below.
 
-## Contents
+## Contents  
 1. <a href="#1--installation-requirements">Installation Requirements</a>
-
 2. <a href="#2--build">Build</a>
-
 3. <a href="#3--device">Device setup</a>
-
 4. <a href="#4--usage">Usage</a>
-
 5. <a href="#5--references">References</a>
 
 ## 1. Installation Requirements <a id="1--installation-requirements"/>
@@ -39,9 +35,10 @@ For mac osx, you should install portaudio and pulseaudio using brew as follows:
 (if you do not have brew, then type:
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)")
 
+```bash
 brew install portaudio
-
 brew install pulseaudio
+```
 
 If you have any issues with portaudio, see:
 https://stackoverflow.com/questions/33851379/pyaudio-installation-on-mac-python-3?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
@@ -61,18 +58,23 @@ Next, install a right version of tensorflow depending on your os (see https://ww
 
 For example, you can install a cpu version for mac os:
 
-pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl 
+    pip3 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py3-none-any.whl 
+
 
 For python2,
-pip2 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py2-none-any.whl 
+    
+    pip2 install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.8.0-py2-none-any.whl 
+
 
 If you have older osx ( < 10.12.6), you should install older versions of tensorflow like:
 
-pip install tensorflow==1.5
+    pip install tensorflow==1.5
+
+BTA: I used TensorFlow 1.15 that works on Ubuntu (16.04-22.04) under Python 3.6.
 
 Then, to install other required packages,
 
-sudo pip install -r requirements.txt
+    pip install -r requirements.txt
 
 ## 2. Build <a id="2--build"/>
 Any building process is not required at the moment.
@@ -107,7 +109,7 @@ pacmd "set-default-source Channel_1__Channel_2.4"
 
 2. run 
 
-The following script will use the default pulse device
+The following script will use the **default pulse device**
 
 ```bash
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
@@ -119,15 +121,17 @@ python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
 
 Type:
 
-python3 ./src/offline_ser.py
+    python3 ./src/offline_ser.py
 
 This will give you a list of audio devices and you need to identify index of your device.
 Note that this index changes depending on usb devices being used. Hence, it's safe to check before it runs.
 
-if you find your device in index 2 (for the argument of d_id), run:
+if you find your device in index 2 (for the argument of `d_id``), run:
 
-python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
+    python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 
+
+BTA: Use the default device index if you unsure.
 
 ## 4. Usage <a id="4--usage"/>
 
@@ -138,12 +142,21 @@ There are many parameters that controls VAD, feature extraction, and prediction.
 python ./src/offline_ser.py 
 ```
 
-For quick use (assuming your device id is 2):
+For quick use (assuming using default device):
+
+```bash
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
+       -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 \
+       -tasks 'arousal:3,valence:3' --seq2seq
+```
+
+If the device id is 2, then do:
 
 ```bash
 python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv \
        -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 \
        -tasks 'arousal:3,valence:3' --seq2seq
+
 ```
 
 The provided model (./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5) is trained by using end-to-end method, which means its input feature is raw-wave. So you have to specify -f_mode as "1". Also, the raw wave form has 16000 samples per sec. So we set -m_t_step as "16000". The model uses 10 contextual windows; so each window has 1600 samples (-c_len 1600).
@@ -159,8 +172,8 @@ You can also put a wave file instead of using a live microphone:
 
 ```bash
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv \
-       -md ../model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl \
-       --save -wav './wav/your_wave.wav'
+       -md ./model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl \
+       --save -wav ./wav/your_wave.wav
 ```
 
 If you run a batch mode, putting a list of wave files, make a txt file that contains a list of wave files, first. Wave files are separated by newlines.
@@ -168,13 +181,14 @@ If you run a batch mode, putting a list of wave files, make a txt file that cont
 ```bash
 python ./src/offline_ser.py -d_id 1 -vd 1000 -p_mode 2 -f_mode 1 -log ./output/offline.wav.csv \
        -md ../model/ami.raw.cnnlstmfcn.0.h5 -c_len 1600 -m_t_step 16000 -tasks 'laughter:2' --stl \
-       --save -batch './wav/list_wave.csv'
+       --save -batch ./wav/list_wave.csv
 ```
 
 ## 5. References <a id="5--references"/>
 
 This software is based on the following papers. Please cite one of these papers in your publications if it helps your research:
 
+```latex
 @inproceedings{kim2017interspeech,
   title={Towards Speech Emotion Recognition ``in the wild'' using Aggregated Corpora and Deep Multi-Task Learning},
   author={\textbf{Kim, Jaebok} and Englebienne, Gwenn and Truong, Khiet P and Evers, Vanessa},
@@ -183,9 +197,21 @@ This software is based on the following papers. Please cite one of these papers 
   year={2017}
 }
 
+@inproceedings{kim2017acmmm, 
+title={Deep Temporal Models using Identity Skip-Connections for Speech Emotion Recognition}, 
+author={Kim, Jaebok and Englebienne, Gwenn and Truong, Khiet P and Evers, Vanessa}, 
+booktitle={Proceedings of ACM Multimedia}, 
+pages={1006-1013}, 
+year={2017} 
+}
 
-@inproceedings{kim2017acmmm, title={Deep Temporal Models using Identity Skip-Connections for Speech Emotion Recognition}, author={Kim, Jaebok and Englebienne, Gwenn and Truong, Khiet P and Evers, Vanessa}, booktitle={Proceedings of ACM Multimedia}, pages={1006-1013}, year={2017} }
-
-@inproceedings{kim2017acii, title={Learning spectro-temporal features with 3D CNNs for speech emotion recognition}, author={Kim, Jaebok and Truong, Khiet and Englebienne, Gwenn and Evers, Vanessa}, booktitle={Proceedings of International Conference on Affective Computing and Intelligent Interaction}, pages={}, year={2017} }
+@inproceedings{kim2017acii, 
+title={Learning spectro-temporal features with 3D CNNs for speech emotion recognition}, 
+author={Kim, Jaebok and Truong, Khiet and Englebienne, Gwenn and Evers, Vanessa}, 
+booktitle={Proceedings of International Conference on Affective Computing and Intelligent Interaction}, 
+pages={}, 
+year={2017} 
+}
+````
 
 <a id="top"/> 
