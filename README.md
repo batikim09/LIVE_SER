@@ -70,6 +70,8 @@ If you have older osx ( < 10.12.6), you should install older versions of tensorf
 
     pip install tensorflow==1.5
 
+BTA: I used TensorFlow 1.15 that works on Ubuntu (16.04-22.04) under Python 3.6.
+
 Then, to install other required packages,
 
     pip install -r requirements.txt
@@ -107,7 +109,7 @@ pacmd "set-default-source Channel_1__Channel_2.4"
 
 2. run 
 
-The following script will use the default pulse device
+The following script will use the **default pulse device**
 
 ```bash
 python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
@@ -124,10 +126,12 @@ Type:
 This will give you a list of audio devices and you need to identify index of your device.
 Note that this index changes depending on usb devices being used. Hence, it's safe to check before it runs.
 
-if you find your device in index 2 (for the argument of d_id), run:
+if you find your device in index 2 (for the argument of `d_id``), run:
 
     python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 -tasks 'arousal:3,valence:3'
 
+
+BTA: Use the default device index if you unsure.
 
 ## 4. Usage <a id="4--usage"/>
 
@@ -138,12 +142,21 @@ There are many parameters that controls VAD, feature extraction, and prediction.
 python ./src/offline_ser.py 
 ```
 
-For quick use (assuming your device id is 2):
+For quick use (assuming using default device):
+
+```bash
+python ./src/offline_ser.py -p_mode 2 -f_mode 1 -log ./output/live.csv \
+       -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 \
+       -tasks 'arousal:3,valence:3' --seq2seq
+```
+
+If the device id is 2, then do:
 
 ```bash
 python ./src/offline_ser.py -d_id 2 -p_mode 2 -f_mode 1 -log ./output/live.csv \
        -md ./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5 -c_len 1600 -m_t_step 16000 \
        -tasks 'arousal:3,valence:3' --seq2seq
+
 ```
 
 The provided model (./model/si.ENG.cw.raw.2d.res.lstm.gpool.dnn.1.h5) is trained by using end-to-end method, which means its input feature is raw-wave. So you have to specify -f_mode as "1". Also, the raw wave form has 16000 samples per sec. So we set -m_t_step as "16000". The model uses 10 contextual windows; so each window has 1600 samples (-c_len 1600).
